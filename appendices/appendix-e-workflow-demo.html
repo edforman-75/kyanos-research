@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix E: Content Optimization Workflow - Interactive Demo</title>
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --accent-blue: #2b6cb0;
+            --light-blue: #ebf4ff;
+            --success-green: #276749;
+            --success-light: #c6f6d5;
+            --warning-amber: #c05621;
+            --warning-light: #feebc8;
+            --danger-red: #c53030;
+            --danger-light: #fed7d7;
+            --text-dark: #1a202c;
+            --text-medium: #4a5568;
+            --border-color: #e2e8f0;
+            --background: #f8fafc;
+            --terminal-bg: #0d1117;
+            --terminal-green: #3fb950;
+            --terminal-text: #c9d1d9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: var(--background);
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .site-header {
+            background: var(--primary-blue);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .site-header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-logo {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .site-nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .paper-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .paper-header-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .paper-series {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .paper-title {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            font-weight: normal;
+        }
+
+        .paper-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro-section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .intro-section h2 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
+
+        .intro-section p {
+            color: var(--text-medium);
+            margin-bottom: 1rem;
+        }
+
+        /* Demo Container */
+        .demo-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .demo-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .demo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .demo-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .demo-nav button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .demo-nav button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .demo-nav button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Screen Management */
+        .demo-screens {
+            position: relative;
+            min-height: 600px;
+        }
+
+        .demo-screen {
+            display: none;
+            padding: 2rem;
+        }
+
+        .demo-screen.active {
+            display: block;
+        }
+
+        /* Progress Indicator */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--light-blue);
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: var(--accent-blue);
+            transform: scale(1.2);
+        }
+
+        .progress-dot.completed {
+            background: var(--success-green);
+        }
+
+        /* Screen Layouts */
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .split-view {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-before {
+            background: var(--danger-light);
+            color: var(--danger-red);
+        }
+
+        .badge-after {
+            background: var(--success-light);
+            color: var(--success-green);
+        }
+
+        .badge-process {
+            background: var(--warning-light);
+            color: var(--warning-amber);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* Content Styling */
+        .content-block {
+            background: white;
+            border-radius: 6px;
+            padding: 1.25rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .content-block h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .content-block p {
+            margin-bottom: 0.75rem;
+            color: var(--text-medium);
+        }
+
+        .highlight {
+            background: linear-gradient(to bottom, transparent 0%, transparent 10%, #ffeb3b 10%, #ffeb3b 95%, transparent 95%, transparent 100%);
+            padding: 0 4px;
+            font-weight: 500;
+        }
+
+        .highlight-missing {
+            background: var(--danger-light);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            border-bottom: 2px dashed var(--danger-red);
+        }
+
+        .highlight-added {
+            background: var(--success-light);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+
+        /* Terminal View */
+        .terminal {
+            background: var(--terminal-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27c93f; }
+
+        .terminal-title {
+            color: var(--terminal-text);
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .terminal-content {
+            padding: 1rem;
+            color: var(--terminal-text);
+            overflow-x: auto;
+        }
+
+        .terminal-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .json-key { color: #79c0ff; }
+        .json-string { color: #a5d6ff; }
+        .json-number { color: #56d364; }
+        .json-null { color: #ff7b72; }
+        .json-error { color: #ff7b72; background: rgba(255,123,114,0.1); }
+
+        /* Chatbot Response */
+        .chatbot-response {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chatbot-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .chatbot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10a37f, #1a7f64);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .chatbot-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .chatbot-text {
+            color: var(--text-medium);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .chatbot-text p {
+            margin-bottom: 0.75rem;
+        }
+
+        .chatbot-citation {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .no-citation {
+            color: var(--text-medium);
+            font-style: italic;
+        }
+
+        /* Score Badge */
+        .score-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.5s;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .score-low {
+            background: linear-gradient(135deg, var(--danger-red), #9b2c2c);
+            color: white;
+        }
+
+        .score-medium {
+            background: linear-gradient(135deg, var(--warning-amber), #b7791f);
+            color: white;
+        }
+
+        .score-high {
+            background: linear-gradient(135deg, var(--success-green), #22543d);
+            color: white;
+        }
+
+        /* Callouts */
+        .callout {
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .callout-insight {
+            background: var(--light-blue);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .callout-warning {
+            background: var(--warning-light);
+            border-left: 4px solid var(--warning-amber);
+        }
+
+        .callout-success {
+            background: var(--success-light);
+            border-left: 4px solid var(--success-green);
+        }
+
+        .callout-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .callout p {
+            font-size: 0.95rem;
+            color: var(--text-medium);
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--light-blue);
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .comparison-table tr:hover {
+            background: var(--background);
+        }
+
+        .check-icon { color: var(--success-green); }
+        .x-icon { color: var(--danger-red); }
+
+        /* Fact List */
+        .fact-list {
+            list-style: none;
+        }
+
+        .fact-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .fact-list li:last-child {
+            border-bottom: none;
+        }
+
+        .fact-status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .fact-missing {
+            background: var(--danger-light);
+            color: var(--danger-red);
+        }
+
+        .fact-added {
+            background: var(--success-light);
+            color: var(--success-green);
+        }
+
+        .fact-content {
+            flex: 1;
+        }
+
+        .fact-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .fact-value {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--primary-blue);
+            color: rgba(255,255,255,0.8);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .site-footer a {
+            color: white;
+        }
+
+        .nav-links {
+            margin-top: 1rem;
+        }
+
+        .nav-links a {
+            margin: 0 1rem;
+        }
+
+        /* Footnotes */
+        .footnotes {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footnotes h3 {
+            font-size: 1rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .footnote-item {
+            font-size: 0.85rem;
+            color: var(--text-medium);
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            text-indent: -1.5rem;
+        }
+
+        sup a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+    
+        /* Dropdown Navigation */
+        .nav-dropdown { position: relative; display: inline-block; }
+        .nav-dropdown-trigger { color: rgba(255,255,255,0.8); cursor: pointer; margin-left: 1.5rem; font-size: 0.9rem; }
+        .nav-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: #1a2a3a; min-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 4px; padding: 0.5rem 0; z-index: 200; padding-top: 0.75rem; }
+        .nav-dropdown::before { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 0.75rem; }
+        .nav-dropdown:hover .nav-dropdown-content { display: block; }
+        .nav-dropdown-content a { display: block; padding: 0.5rem 1rem; white-space: nowrap; font-size: 0.8125rem; color: rgba(255,255,255,0.8); border-left: 3px solid transparent; margin: 0; }
+        .nav-dropdown-content a:hover { background: #2c4a6e; color: white; border-left-color: #4a90d9; }
+
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="index.html" class="site-logo">KyanosTech Strategy Research</a>
+                        <nav class="site-nav">
+                <a href="../index.html">Research</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Papers ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="../papers/paper-1-synthesis.html">I. The Case for Progressive AI Infrastructure</a>
+                        <a href="../papers/paper-2-gatekeeper.html">II. AI as the New Information Gatekeeper</a>
+                        <a href="../papers/paper-3-structural-alignment.html">III. Evidence Asymmetry and Structural Alignment</a>
+                        <a href="../papers/paper-4-neutrality.html">IV. The Impossibility of Political Neutrality</a>
+                        <a href="../papers/paper-5-structured-data.html">V. Structured Data as Independent Value</a>
+                        <a href="../papers/paper-6-technical-pathways.html">VI. Technical Pathways to AI Visibility</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Appendices ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="appendix-a-market-dynamics.html">A. Market Dynamics</a>
+                        <a href="appendix-b-voter-ai-usage.html">B. Voter AI Usage Projections</a>
+                        <a href="appendix-c-cost-per-vote-roi.html">C. Cost-Per-Vote ROI Analysis</a>
+                        <a href="appendix-d-monte-carlo.html">D. Monte Carlo Simulation</a>
+                        <a href="appendix-e-workflow-demo.html">E. Campaign Workflow Demo</a>
+                        <a href="appendix-f-demographic-convergence.html">F. Demographic Convergence</a>
+                    </div>
+                </div>
+                <a href="../about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="paper-header">
+        <div class="paper-header-inner">
+            <div class="paper-series">Appendix E</div>
+            <h1 class="paper-title">Content Optimization Workflow</h1>
+            <p class="paper-subtitle">An Interactive Demonstration of Structured Data Implementation</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro-section">
+            <h2>What This Demo Shows</h2>
+            <p>This interactive demonstration illustrates the content optimization workflow described in Paper V. It shows <span class="highlight">how campaign content transforms from a standard press release into AI-optimized content with structured data markup</span>-and how this affects what voters see when they ask AI chatbots about candidates.</p>
+            <p>Use the navigation buttons or arrow keys to step through the workflow. Each screen represents a stage in the optimization process.</p>
+        </div>
+
+        <!-- Demo Container -->
+        <div class="demo-container">
+            <div class="demo-header">
+                <div class="demo-title">Campaign Content Optimization Demo</div>
+                <div class="demo-nav">
+                    <button onclick="prevScreen()" id="prev-btn">← Previous</button>
+                    <button onclick="nextScreen()" id="next-btn">Next ←'</button>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-dot active" onclick="goToScreen(1)"></div>
+                <div class="progress-dot" onclick="goToScreen(2)"></div>
+                <div class="progress-dot" onclick="goToScreen(3)"></div>
+                <div class="progress-dot" onclick="goToScreen(4)"></div>
+                <div class="progress-dot" onclick="goToScreen(5)"></div>
+                <div class="progress-dot" onclick="goToScreen(6)"></div>
+            </div>
+
+            <div class="demo-screens">
+                <!-- Screen 1: Before - Original Content -->
+                <div class="demo-screen active" id="screen-1">
+                    <div class="score-badge score-low">
+                        <div class="score-value">41</div>
+                        <div class="score-label">Score</div>
+                    </div>
+
+                    <div class="step-indicator">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Before: Unoptimized Press Release</div>
+                    </div>
+
+                    <div class="split-view">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-before">Original</span>
+                                <span class="panel-title">Campaign Press Release</span>
+                            </div>
+                            <div class="content-block">
+                                <h3>Lee Announces Major Manufacturing Investment Coming to Bay City</h3>
+                                <p><strong>BAY CITY, MI</strong> - Congressional candidate Jordan Lee today announced plans for a new advanced manufacturing facility that will bring clean energy component production to Bay City.</p>
+                                <p>"After years of watching jobs leave our community, we're finally seeing investment come back," said Lee. "This facility will create <span class="highlight-missing">good-paying manufacturing jobs</span> and help position mid-Michigan as a leader in the clean energy economy."</p>
+                                <p>The project will address <span class="highlight-missing">the current high unemployment</span> in the district. Lee emphasized that this investment represents the kind of economic development the region needs.</p>
+                                <p>The facility is expected to begin operations <span class="highlight-missing">in the coming years</span> and will focus on producing components for renewable energy systems.</p>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-before">Problem</span>
+                                <span class="panel-title">Missing Verifiable Facts</span>
+                            </div>
+                            <ul class="fact-list">
+                                <li>
+                                    <span class="fact-status fact-missing">✗</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Number of Jobs</div>
+                                        <div class="fact-value">"Good-paying jobs" - no specific number</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-missing">✗</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Investment Amount</div>
+                                        <div class="fact-value">No dollar figure provided</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-missing">✗</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Timeline</div>
+                                        <div class="fact-value">"Coming years" - no specific date</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-missing">✗</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Source Citation</div>
+                                        <div class="fact-value">No verifiable source for claims</div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div class="callout callout-warning">
+                                <div class="callout-label">⚠️ Low Discoverability</div>
+                                <p>Without specific, verifiable facts, AI systems cannot confidently cite this content when voters ask about the candidate's economic plans.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 2: What AI Sees (Raw) -->
+                <div class="demo-screen" id="screen-2">
+                    <div class="score-badge score-low">
+                        <div class="score-value">41</div>
+                        <div class="score-label">Score</div>
+                    </div>
+
+                    <div class="step-indicator">
+                        <div class="step-number">2</div>
+                        <div class="step-title">What AI Systems See: Missing Structured Data</div>
+                    </div>
+
+                    <div class="split-view">
+                        <div class="panel" style="grid-column: 1 / -1;">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-process">Technical View</span>
+                                <span class="panel-title">JSON-LD Structured Data Analysis</span>
+                            </div>
+                            <div class="terminal">
+                                <div class="terminal-header">
+                                    <span class="terminal-dot red"></span>
+                                    <span class="terminal-dot yellow"></span>
+                                    <span class="terminal-dot green"></span>
+                                    <span class="terminal-title">schema.org/NewsArticle</span>
+                                </div>
+                                <div class="terminal-content">
+<pre>{
+  <span class="json-key">"@context"</span>: <span class="json-string">"https://schema.org"</span>,
+  <span class="json-key">"@type"</span>: <span class="json-string">"NewsArticle"</span>,
+  <span class="json-key">"headline"</span>: <span class="json-string">"Lee Announces Major Manufacturing Investment"</span>,
+  <span class="json-key">"author"</span>: {
+    <span class="json-key">"@type"</span>: <span class="json-string">"Person"</span>,
+    <span class="json-key">"name"</span>: <span class="json-string">"Jordan Lee Campaign"</span>
+  },
+  <span class="json-key">"datePublished"</span>: <span class="json-string">"2028-01-15"</span>,
+  <span class="json-key">"about"</span>: {
+    <span class="json-key">"@type"</span>: <span class="json-string">"Event"</span>,
+    <span class="json-key">"name"</span>: <span class="json-string">"Manufacturing Facility Announcement"</span>,
+    <span class="json-key">"location"</span>: {
+      <span class="json-key">"addressLocality"</span>: <span class="json-string">"Bay City"</span>,
+      <span class="json-key">"addressRegion"</span>: <span class="json-string">"MI"</span>
+    },
+    <span class="json-error">"numberOfJobs": null,           // ❌ MISSING - AI cannot cite job numbers</span>
+    <span class="json-error">"investmentAmount": null,       // ❌ MISSING - AI cannot cite investment</span>
+    <span class="json-error">"startDate": null,              // ❌ MISSING - AI cannot cite timeline</span>
+    <span class="json-error">"citation": null                // ❌ MISSING - AI cannot verify claims</span>
+  }
+}</pre>
+                                </div>
+                            </div>
+
+                            <div class="callout callout-insight" style="margin-top: 1.5rem;">
+                                <div class="callout-label">ðŸ'¡ Why This Matters</div>
+                                <p>AI chatbots parse structured data to verify claims before citing them. When fields are null or missing, the AI assigns lower confidence to the content and may not cite it at all-or may cite a competitor's content that has complete data.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 3: Adding Facts -->
+                <div class="demo-screen" id="screen-3">
+                    <div class="score-badge score-medium">
+                        <div class="score-value">72</div>
+                        <div class="score-label">Score</div>
+                    </div>
+
+                    <div class="step-indicator">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Optimization: Adding Verifiable Facts</div>
+                    </div>
+
+                    <div class="split-view">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-process">Optimizing</span>
+                                <span class="panel-title">Enhanced Press Release</span>
+                            </div>
+                            <div class="content-block">
+                                <h3>Lee Announces Major Manufacturing Investment Coming to Bay City</h3>
+                                <p><strong>BAY CITY, MI</strong> - Congressional candidate Jordan Lee today announced plans for a new advanced manufacturing facility that will bring clean energy component production to Bay City.</p>
+                                <p>"After years of watching jobs leave our community, we're finally seeing investment come back," said Lee. "This facility will create <span class="highlight-added">1,200 good-paying manufacturing jobs</span> and help position mid-Michigan as a leader in the clean energy economy."</p>
+                                <p>The <span class="highlight-added">$340 million project</span> will address the district's unemployment rate of <span class="highlight-added">6.8% (vs. 4.1% nationally)</span>. Lee emphasized that this investment represents the kind of economic development the region needs.</p>
+                                <p>The facility is expected to begin operations in <span class="highlight-added">Q3 2029</span> and will focus on producing components for renewable energy systems.</p>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-after">Added</span>
+                                <span class="panel-title">Verifiable Facts</span>
+                            </div>
+                            <ul class="fact-list">
+                                <li>
+                                    <span class="fact-status fact-added">✓</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Number of Jobs</div>
+                                        <div class="fact-value">1,200 manufacturing positions</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-added">✓</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Investment Amount</div>
+                                        <div class="fact-value">$340 million capital investment</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-added">✓</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Timeline</div>
+                                        <div class="fact-value">Operations begin Q3 2029</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="fact-status fact-added">✓</span>
+                                    <div class="fact-content">
+                                        <div class="fact-label">Context Data</div>
+                                        <div class="fact-value">District unemployment: 6.8% vs 4.1% national</div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div class="callout callout-success">
+                                <div class="callout-label">✓ Improved Discoverability</div>
+                                <p>Specific facts give AI systems verifiable data points to cite. The content now contains information that can be cross-referenced and confirmed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 4: Complete Structured Data -->
+                <div class="demo-screen" id="screen-4">
+                    <div class="score-badge score-high">
+                        <div class="score-value">94</div>
+                        <div class="score-label">Score</div>
+                    </div>
+
+                    <div class="step-indicator">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Complete: Structured Data with Sources</div>
+                    </div>
+
+                    <div class="split-view">
+                        <div class="panel" style="grid-column: 1 / -1;">
+                            <div class="panel-header">
+                                <span class="panel-badge badge-after">Complete</span>
+                                <span class="panel-title">Optimized JSON-LD Structured Data</span>
+                            </div>
+                            <div class="terminal">
+                                <div class="terminal-header">
+                                    <span class="terminal-dot red"></span>
+                                    <span class="terminal-dot yellow"></span>
+                                    <span class="terminal-dot green"></span>
+                                    <span class="terminal-title">schema.org/NewsArticle - Fully Optimized</span>
+                                </div>
+                                <div class="terminal-content">
+<pre>{
+  <span class="json-key">"@context"</span>: <span class="json-string">"https://schema.org"</span>,
+  <span class="json-key">"@type"</span>: <span class="json-string">"NewsArticle"</span>,
+  <span class="json-key">"headline"</span>: <span class="json-string">"Lee Announces $340M Manufacturing Investment Creating 1,200 Jobs"</span>,
+  <span class="json-key">"author"</span>: { <span class="json-key">"@type"</span>: <span class="json-string">"Person"</span>, <span class="json-key">"name"</span>: <span class="json-string">"Jordan Lee Campaign"</span> },
+  <span class="json-key">"datePublished"</span>: <span class="json-string">"2028-01-15"</span>,
+  <span class="json-key">"about"</span>: {
+    <span class="json-key">"@type"</span>: <span class="json-string">"BusinessEvent"</span>,
+    <span class="json-key">"name"</span>: <span class="json-string">"CleanTech Manufacturing Facility Announcement"</span>,
+    <span class="json-key">"location"</span>: {
+      <span class="json-key">"@type"</span>: <span class="json-string">"Place"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"Bay City Industrial Park"</span>,
+      <span class="json-key">"address"</span>: { <span class="json-key">"addressLocality"</span>: <span class="json-string">"Bay City"</span>, <span class="json-key">"addressRegion"</span>: <span class="json-string">"MI"</span> }
+    },
+    <span class="json-key">"numberOfJobs"</span>: <span class="json-number">1200</span>,                          <span style="color: var(--terminal-green);">// ✓ Specific job count</span>
+    <span class="json-key">"investmentAmount"</span>: {
+      <span class="json-key">"@type"</span>: <span class="json-string">"MonetaryAmount"</span>,
+      <span class="json-key">"value"</span>: <span class="json-number">340000000</span>,
+      <span class="json-key">"currency"</span>: <span class="json-string">"USD"</span>
+    },                                              <span style="color: var(--terminal-green);">// ✓ Verified investment</span>
+    <span class="json-key">"startDate"</span>: <span class="json-string">"2029-07-01"</span>,                     <span style="color: var(--terminal-green);">// ✓ Specific timeline</span>
+    <span class="json-key">"citation"</span>: {
+      <span class="json-key">"@type"</span>: <span class="json-string">"CreativeWork"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"MI Dept. of Labor Statistics Q4 2027"</span>,
+      <span class="json-key">"url"</span>: <span class="json-string">"https://michigan.gov/leo/labor-market"</span>
+    }                                               <span style="color: var(--terminal-green);">// ✓ Verified source</span>
+  }
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 5: Chatbot Comparison - THE MONEY SHOT -->
+                <div class="demo-screen" id="screen-5">
+                    <div class="step-indicator">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Result: How Voters Experience the Difference</div>
+                    </div>
+
+                    <!-- Voter Question - Prominent Display -->
+                    <div style="background: linear-gradient(135deg, #f0f4f8, #e2e8f0); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+                        <div style="font-size: 0.85rem; color: var(--text-medium); margin-bottom: 0.5rem;">A voter asks an AI chatbot:</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: var(--primary-blue);">"What is Jordan Lee's plan for jobs in Bay City?"</div>
+                    </div>
+
+                    <!-- Side-by-Side Comparison -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        
+                        <!-- WITHOUT Optimization -->
+                        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--danger-red);">
+                            <div style="background: linear-gradient(135deg, var(--danger-red), #9b2c2c); color: white; padding: 1rem 1.25rem; text-align: center;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Without Optimization</div>
+                                <div style="font-size: 1.1rem; font-weight: 600;">Score: 41</div>
+                            </div>
+                            <div style="padding: 1.25rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #10a37f, #1a7f64); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">AI</div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">AI Assistant</div>
+                                </div>
+                                <div style="color: var(--text-medium); font-size: 0.95rem; line-height: 1.7;">
+                                    <p style="margin-bottom: 0.75rem;">I found limited information about Jordan Lee's specific job plans for Bay City. Based on campaign materials, Lee has announced plans for a manufacturing facility that would create jobs in the clean energy sector.</p>
+                                    <p style="margin-bottom: 0.75rem;">I wasn't able to find specific details about the number of jobs, investment amount, or timeline. You might want to check the candidate's official website for more details.</p>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-medium); font-style: italic; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                                    ⚠️ No specific sources cited
+                                </div>
+                            </div>
+                            <div style="background: var(--danger-light); padding: 0.75rem 1.25rem; font-size: 0.85rem; color: var(--danger-red);">
+                                <strong>Impact:</strong> Voter learns nothing actionable
+                            </div>
+                        </div>
+
+                        <!-- WITH Optimization -->
+                        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--success-green);">
+                            <div style="background: linear-gradient(135deg, var(--success-green), #22543d); color: white; padding: 1rem 1.25rem; text-align: center;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">With Optimization</div>
+                                <div style="font-size: 1.1rem; font-weight: 600;">Score: 94</div>
+                            </div>
+                            <div style="padding: 1.25rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #10a37f, #1a7f64); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">AI</div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">AI Assistant</div>
+                                </div>
+                                <div style="color: var(--text-medium); font-size: 0.95rem; line-height: 1.7;">
+                                    <p style="margin-bottom: 0.75rem;">Jordan Lee has announced a major manufacturing initiative for Bay City:</p>
+                                    <div style="background: var(--light-blue); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 0.75rem;">
+                                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 0.75rem; font-size: 0.9rem;">
+                                            <strong>Jobs:</strong> <span>1,200 manufacturing positions</span>
+                                            <strong>Investment:</strong> <span>$340 million facility</span>
+                                            <strong>Timeline:</strong> <span>Operations Q3 2029</span>
+                                            <strong>Focus:</strong> <span>Clean energy components</span>
+                                        </div>
+                                    </div>
+                                    <p>This addresses the district's 6.8% unemployment rate, significantly above the 4.1% national average.</p>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                                    ðŸ"„ Source: Jordan Lee Campaign; verified against MI Dept. of Labor
+                                </div>
+                            </div>
+                            <div style="background: var(--success-light); padding: 0.75rem 1.25rem; font-size: 0.85rem; color: var(--success-green);">
+                                <strong>Impact:</strong> Voter gets specific, verified information
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom insight -->
+                    <div style="text-align: center; margin-top: 2rem; padding: 1.25rem; background: var(--light-blue); border-radius: 8px;">
+                        <div style="font-size: 1.1rem; color: var(--primary-blue); font-weight: 600;">Same candidate. Same policy. Different voter experience.</div>
+                        <div style="font-size: 0.95rem; color: var(--text-medium); margin-top: 0.5rem;">The only difference is structured data optimization.</div>
+                    </div>
+                </div>
+
+                <!-- Screen 6: Summary -->
+                <div class="demo-screen" id="screen-6">
+                    <div class="step-indicator">
+                        <div class="step-number">6</div>
+                        <div class="step-title">Summary: The Optimization Effect</div>
+                    </div>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Before Optimization</th>
+                                <th>After Optimization</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Discoverability Score</td>
+                                <td><span class="x-icon">✗</span> 41/100</td>
+                                <td><span class="check-icon">✗</span> 94/100</td>
+                            </tr>
+                            <tr>
+                                <td>Verifiable Facts</td>
+                                <td><span class="x-icon">✗</span> 0 specific claims</td>
+                                <td><span class="check-icon">✓</span> 4 verified facts</td>
+                            </tr>
+                            <tr>
+                                <td>Source Citations</td>
+                                <td><span class="x-icon">✗</span> None</td>
+                                <td><span class="check-icon">✓</span> Government data linked</td>
+                            </tr>
+                            <tr>
+                                <td>Structured Data</td>
+                                <td><span class="x-icon">✗</span> Incomplete schema</td>
+                                <td><span class="check-icon">✓</span> Full JSON-LD markup</td>
+                            </tr>
+                            <tr>
+                                <td>AI Response Quality</td>
+                                <td><span class="x-icon">✗</span> Vague, uncertain</td>
+                                <td><span class="check-icon">✓</span> Specific, confident</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="callout callout-insight" style="margin-top: 2rem;">
+                        <div class="callout-label">ðŸ'¡ The Key Insight</div>
+                        <p>This workflow takes approximately 15-30 minutes per press release but produces content that AI systems will cite accurately for months. The investment is not in the markup itself-it's in gathering and verifying the specific facts that make the markup meaningful.</p>
+                        <p style="margin-top: 0.75rem;">As documented in <a href="paper-5-structured-data.html">Paper V</a>, knowledge graphs with structured data improve AI accuracy by 2-4×. This demonstration shows what that improvement looks like in practice.</p>
+                    </div>
+
+                    <div class="callout callout-success" style="margin-top: 1rem;">
+                        <div class="callout-label">✓ Try the Interactive Model</div>
+                        <p>See <a href="appendix-d-monte-carlo.html">Appendix D</a> to explore how the optimization lift factor affects electoral impact across different scenarios.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footnotes -->
+        <div class="footnotes">
+            <h3>Notes</h3>
+            <p class="footnote-item" id="fn1"><strong>[1]</strong> <strong>Discoverability Score:</strong> A conceptual metric representing how likely AI systems are to cite the content accurately. Factors include: completeness of structured data, presence of verifiable facts, source citations, and semantic clarity. The specific scores shown (41 ←' 94) are illustrative.</p>
+            <p class="footnote-item" id="fn2"><strong>[2]</strong> <strong>JSON-LD markup:</strong> JavaScript Object Notation for Linked Data, a W3C standard for embedding structured data in web pages. See <a href="https://schema.org">schema.org</a> for the vocabulary and <a href="https://json-ld.org">json-ld.org</a> for the specification.</p>
+            <p class="footnote-item" id="fn3"><strong>[3]</strong> <strong>Chatbot response examples:</strong> These responses are illustrative and represent the type of difference observed when comparing AI responses to content with and without structured data. Actual responses vary by platform, query phrasing, and other factors.</p>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>© 2025 KyanosTech. Research produced with Claude (Anthropic).</p>
+            <div class="nav-links">
+                <a href="appendix-c-cost-per-vote-roi.html">← Appendix C</a>
+                <a href="index.html">Home</a>
+                <a href="paper-5-structured-data.html">Paper V ←'</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentScreen = 1;
+        const totalScreens = 6;
+
+        function updateScreen() {
+            // Hide all screens
+            document.querySelectorAll('.demo-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show current screen
+            document.getElementById(`screen-${currentScreen}`).classList.add('active');
+            
+            // Update progress dots
+            document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index + 1 === currentScreen) {
+                    dot.classList.add('active');
+                } else if (index + 1 < currentScreen) {
+                    dot.classList.add('completed');
+                }
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentScreen === 1;
+            document.getElementById('next-btn').disabled = currentScreen === totalScreens;
+            document.getElementById('next-btn').textContent = currentScreen === totalScreens ? 'Complete' : 'Next ←'';
+        }
+
+        function nextScreen() {
+            if (currentScreen < totalScreens) {
+                currentScreen++;
+                updateScreen();
+            }
+        }
+
+        function prevScreen() {
+            if (currentScreen > 1) {
+                currentScreen--;
+                updateScreen();
+            }
+        }
+
+        function goToScreen(screenNum) {
+            currentScreen = screenNum;
+            updateScreen();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextScreen();
+            if (e.key === 'ArrowLeft') prevScreen();
+        });
+
+        // Initialize
+        updateScreen();
+    </script>
+</body>
+</html>

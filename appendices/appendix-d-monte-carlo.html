@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix D: Electoral Impact Model - Monte Carlo Simulation</title>
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --accent-blue: #2b6cb0;
+            --light-blue: #ebf4ff;
+            --success-green: #276749;
+            --success-light: #c6f6d5;
+            --warning-amber: #c05621;
+            --warning-light: #feebc8;
+            --danger-red: #c53030;
+            --danger-light: #fed7d7;
+            --text-dark: #1a202c;
+            --text-medium: #4a5568;
+            --border-color: #e2e8f0;
+            --background: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: var(--background);
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .site-header {
+            background: var(--primary-blue);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .site-header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-logo {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .site-nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .paper-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .paper-header-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .paper-series {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .paper-title {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            font-weight: normal;
+        }
+
+        .paper-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .intro-section h2 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-blue);
+        }
+
+        .intro-section p {
+            margin-bottom: 1rem;
+        }
+
+        .callout {
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .callout-info {
+            background: var(--light-blue);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .callout-label {
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: var(--light-blue);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .assumption {
+            margin-bottom: 1.75rem;
+            position: relative;
+        }
+
+        .assumption-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .assumption label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .help-icon {
+            width: 18px;
+            height: 18px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            cursor: help;
+            position: relative;
+        }
+
+        .help-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: normal;
+            line-height: 1.5;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .help-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: var(--primary-blue);
+        }
+
+        .help-icon:hover .help-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-tooltip strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .assumption .source {
+            font-size: 0.75rem;
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--border-color);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            min-width: 70px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-medium);
+            margin-top: 0.25rem;
+        }
+
+        .fixed-value-display {
+            background: var(--light-blue);
+            border: 2px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .fixed-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .fixed-label {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .formula-box {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metric-card {
+            background: var(--light-blue);
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-card.success { background: var(--success-light); }
+        .metric-card.warning { background: var(--warning-light); }
+        .metric-card.danger { background: var(--danger-light); }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .metric-card.success .metric-value { color: var(--success-green); }
+        .metric-card.warning .metric-value { color: var(--warning-amber); }
+        .metric-card.danger .metric-value { color: var(--danger-red); }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            margin-top: 0.25rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr.highlight {
+            background: var(--success-light);
+            font-weight: 600;
+        }
+
+        .comparison-table tr.danger {
+            background: var(--danger-light);
+        }
+
+        .histogram-section h3 {
+            font-size: 0.95rem;
+            color: var(--text-medium);
+            margin-bottom: 0.75rem;
+        }
+
+        .histogram {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 1px;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .histogram-bar {
+            flex: 1;
+            background: var(--accent-blue);
+            border-radius: 2px 2px 0 0;
+            min-width: 3px;
+            transition: height 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .histogram-bar.above-breakeven {
+            background: var(--success-green);
+            opacity: 1;
+        }
+
+        .breakeven-line {
+            position: absolute;
+            bottom: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--danger-red);
+            z-index: 10;
+        }
+
+        .breakeven-label {
+            position: absolute;
+            bottom: 100%;
+            transform: translateX(-50%);
+            background: var(--danger-red);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .histogram-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-medium);
+            margin-top: 0.5rem;
+        }
+
+        .interpretation {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: var(--success-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .interpretation.warning {
+            background: var(--warning-light);
+            border-left-color: var(--warning-amber);
+        }
+
+        .interpretation h3 {
+            font-size: 1rem;
+            color: var(--success-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .interpretation.warning h3 {
+            color: var(--warning-amber);
+        }
+
+        .interpretation p {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .footnote {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-medium);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .site-footer {
+            background: var(--primary-blue);
+            color: rgba(255,255,255,0.8);
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .site-footer a { color: white; }
+
+        .fn-ref {
+            font-size: 0.75em;
+            vertical-align: super;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .footnotes-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .footnotes-section h2 {
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-blue);
+        }
+
+        .footnote-item {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            text-indent: -1.5rem;
+        }
+    
+        /* Dropdown Navigation */
+        .nav-dropdown { position: relative; display: inline-block; }
+        .nav-dropdown-trigger { color: rgba(255,255,255,0.8); cursor: pointer; margin-left: 1.5rem; font-size: 0.9rem; }
+        .nav-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: #1a2a3a; min-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 4px; padding: 0.5rem 0; z-index: 200; padding-top: 0.75rem; }
+        .nav-dropdown::before { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 0.75rem; }
+        .nav-dropdown:hover .nav-dropdown-content { display: block; }
+        .nav-dropdown-content a { display: block; padding: 0.5rem 1rem; white-space: nowrap; font-size: 0.8125rem; color: rgba(255,255,255,0.8); border-left: 3px solid transparent; margin: 0; }
+        .nav-dropdown-content a:hover { background: #2c4a6e; color: white; border-left-color: #4a90d9; }
+
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="index.html" class="site-logo">KyanosTech Strategy Research</a>
+                        <nav class="site-nav">
+                <a href="../index.html">Research</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Papers ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="../papers/paper-1-synthesis.html">I. The Case for Progressive AI Infrastructure</a>
+                        <a href="../papers/paper-2-gatekeeper.html">II. AI as the New Information Gatekeeper</a>
+                        <a href="../papers/paper-3-structural-alignment.html">III. Evidence Asymmetry and Structural Alignment</a>
+                        <a href="../papers/paper-4-neutrality.html">IV. The Impossibility of Political Neutrality</a>
+                        <a href="../papers/paper-5-structured-data.html">V. Structured Data as Independent Value</a>
+                        <a href="../papers/paper-6-technical-pathways.html">VI. Technical Pathways to AI Visibility</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Appendices ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="appendix-a-market-dynamics.html">A. Market Dynamics</a>
+                        <a href="appendix-b-voter-ai-usage.html">B. Voter AI Usage Projections</a>
+                        <a href="appendix-c-cost-per-vote-roi.html">C. Cost-Per-Vote ROI Analysis</a>
+                        <a href="appendix-d-monte-carlo.html">D. Monte Carlo Simulation</a>
+                        <a href="appendix-e-workflow-demo.html">E. Campaign Workflow Demo</a>
+                        <a href="appendix-f-demographic-convergence.html">F. Demographic Convergence</a>
+                    </div>
+                </div>
+                <a href="../about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="paper-header">
+        <div class="paper-header-inner">
+            <div class="paper-series">Appendix D</div>
+            <h1 class="paper-title">Electoral Impact Model</h1>
+            <p class="paper-subtitle">Monte Carlo Simulation for AI Content Optimization ROI</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro-section">
+            <h2>Why Monte Carlo Simulation?</h2>
+            
+            <p>Predicting how AI will influence elections in 2026-2028 involves substantial uncertainty. We don't know exactly how many voters will use AI chatbots, how many will ask political questions, or how many will be influenced by the information they receive. Traditional forecasting would require picking a single "best guess" for each assumption-and getting any one wrong could invalidate the entire analysis.</p>
+
+            <p><strong>Monte Carlo simulation</strong> takes a different approach: instead of guessing one value for each assumption, we define a <em>range</em> of plausible values and then run thousands of simulations, randomly sampling from each range.<sup><a href="#fn1" class="fn-ref">1</a></sup> The result is not a single prediction but a <em>probability distribution</em> of outcomes-showing us not just what <em>might</em> happen, but how likely different outcomes are.</p>
+
+            <div class="callout callout-info">
+                <div class="callout-label">The Key Question</div>
+                <p>This model answers: <span class="highlight"><strong>How many voters might AI content optimization influence, and is that worth $5 million compared to spending the same amount on television advertising?</strong></span></p>
+            </div>
+
+            <h2>The Model</h2>
+
+            <p>The simulation calculates <strong>voters influenced</strong> using this formula:</p>
+
+            <div class="formula-box">
+                <div>Optimized = AI Users × AI Search Rate × Query Rate × Reach Rate × Influence Rate</div>
+                <div style="margin-top: 0.5rem;">Baseline = Optimized ÷ Lift Factor</div>
+                <div style="margin-top: 0.5rem; font-weight: bold; color: var(--success-green);">Incremental (what $5M buys) = Optimized − Baseline</div>
+            </div>
+
+            <p>The key question: <strong>Is the incremental benefit worth $5M?</strong> We compare the cost per <em>incremental</em> voter against television advertising:</p>
+
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><strong>AI Content Optimization:</strong> Fixed cost of $5M to gain incremental voters beyond baseline</li>
+                <li><strong>Television Advertising:</strong> Variable cost of $5,000-$10,000 per influenced voter</li>
+            </ul>
+
+            <p>The <strong>break-even point</strong> is where AI optimization's incremental benefit costs the same as equivalent TV advertising. Above this point, AI optimization delivers better ROI.</p>
+
+            <div class="callout callout-info">
+                <div class="callout-label">Scope Note: Seven Swing States</div>
+                <p>This model focuses on the seven swing states that determined the 2024 election: Arizona, Georgia, Michigan, Nevada, North Carolina, Pennsylvania, and Wisconsin. However, <strong>the same $5M infrastructure investment also supports down-ballot races and campaigns in non-swing states</strong>-the tools, schema markup standards, and deployment systems work nationwide. The swing state focus here represents a conservative estimate of impact; total reach is significantly broader.</p>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <h2>
+                    Model Assumptions
+                    <button class="reset-btn" onclick="resetToDefaults()">↺ Reset</button>
+                </h2>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>Swing State AI Users</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                The number of voters in the seven swing states (AZ, GA, MI, NC, NV, PA, WI) who have used an AI chatbot like ChatGPT, Claude, or Perplexity.
+                                <br><br>
+                                <strong>Range source:</strong>
+                                Conservative estimate (7M) assumes lower ChatGPT-only usage; optimistic (18M) includes all LLM platforms. See <a href="appendix-b-voter-ai-usage.html" style="color: #a0c4ff;">Appendix B, Section IV</a> for detailed methodology.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: <a href="appendix-b-voter-ai-usage.html">Appendix B</a> (Pew Research + turnout adjustment)</div>
+                    <div class="slider-container">
+                        <input type="range" id="ai-users" min="7" max="18" step="0.5" value="12.5">
+                        <span class="slider-value" id="ai-users-value">11.5M</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Conservative: 7M</span>
+                        <span>Optimistic: 18M</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>AI vs. Traditional Search Rate</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                Of voters who research candidates online, what percentage use AI chatbots vs. traditional search engines like Google?
+                                <br><br>
+                                <strong>Range source:</strong>
+                                Currently ~15-20% of searches include AI-generated answers (Google AI Overviews, Bing Copilot). By 2028, this could reach 40-60% as AI integration deepens. Conservative estimate assumes slow adoption; optimistic assumes rapid shift.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: Author projection based on current AI search trends</div>
+                    <div class="slider-container">
+                        <input type="range" id="ai-search-rate" min="10" max="70" step="5" value="40">
+                        <span class="slider-value" id="ai-search-rate-value">35%</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>2025 baseline: 10%</span>
+                        <span>2028 projection: 70%</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>Political Query Rate</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                Of all AI users, what percentage will ask political questions about candidates, issues, or voting during the campaign?
+                                <br><br>
+                                <strong>Range source:</strong>
+                                No direct research exists. Range reflects author judgment: 3% assumes most users never ask political questions; 35% assumes election-season surge in political queries. This is the highest-uncertainty assumption.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: Author estimate (no direct data available)</div>
+                    <div class="slider-container">
+                        <input type="range" id="query-rate" min="3" max="35" step="1" value="19">
+                        <span class="slider-value" id="query-rate-value">15%</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Conservative: 3%</span>
+                        <span>Optimistic: 35%</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>Content Reach Rate</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                Of voters asking political questions, what percentage would receive improved information because of structured data optimization?
+                                <br><br>
+                                <strong>Range source:</strong>
+                                Depends on campaign coverage breadth. 10% assumes only top-tier races are optimized; 80% assumes comprehensive coverage including down-ballot races. Author estimate based on typical campaign digital investment patterns.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: Author estimate based on campaign coverage scope</div>
+                    <div class="slider-container">
+                        <input type="range" id="reach-rate" min="10" max="80" step="5" value="45">
+                        <span class="slider-value" id="reach-rate-value">50%</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Conservative: 10%</span>
+                        <span>Optimistic: 80%</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>Influence Rate</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                Of voters who receive improved information, what percentage shift their vote as a result?
+                                <br><br>
+                                <strong>Range source:</strong>
+                                Upper bound (4.76%) from Rand et al., <em>Nature</em> (Dec 2025), which found AI chatbots shifted 1 in 21 voters. Lower bound (0.5%) is a conservative discount assuming information accuracy has smaller effect than active persuasion.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: <a href="https://www.nature.com/articles/d41586-025-03975-9">Nature (Dec 2025)</a> found 4.76%; conservative discount applied</div>
+                    <div class="slider-container">
+                        <input type="range" id="influence-rate" min="0.5" max="5" step="0.25" value="2.75">
+                        <span class="slider-value" id="influence-rate-value">2.5%</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Conservative: 0.5%</span>
+                        <span>Experimental: 4.76%</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>Optimization Lift Factor</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                How much more effective is AI-optimized content (with structured data markup) at influencing voters compared to unoptimized baseline content?
+                                <br><br>
+                                <strong>Why it matters:</strong>
+                                Chatbots already read campaign websites without optimization. This factor captures the <em>incremental benefit</em> of the $5M investment-the improvement over doing nothing.
+                                <br><br>
+                                <strong>Range source:</strong>
+                                EMI research shows knowledge graph accuracy improves from 16.7% ←' 54.2% ←' 72% with structured data (roughly 2-4× improvement). Conservative estimate assumes modest lift; optimistic assumes full knowledge graph effect.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: EMI knowledge graph research (2-4× accuracy improvement)</div>
+                    <div class="slider-container">
+                        <input type="range" id="lift-factor" min="1.2" max="4" step="0.1" value="2.6">
+                        <span class="slider-value" id="lift-factor-value">2.0×</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Conservative: 1.2×</span>
+                        <span>Full effect: 4.0×</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>AI Optimization Investment</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                The total investment in building structured data infrastructure, tools, and deployment for campaign content optimization.
+                                <br><br>
+                                <strong>Why it's fixed:</strong>
+                                This is infrastructure investment that must happen early in the election cycle. The cost is primarily product development and doesn't scale with the number of voters reached-unlike TV advertising, which is a variable cost.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Fixed cost (infrastructure investment, does not scale with reach)</div>
+                    <div class="fixed-value-display">
+                        <span class="fixed-value">$5M</span>
+                        <span class="fixed-label">Fixed Investment</span>
+                    </div>
+                </div>
+
+                <div class="assumption">
+                    <div class="assumption-header">
+                        <label>TV Cost Per Influenced Voter</label>
+                        <span class="help-icon">?
+                            <span class="help-tooltip">
+                                <strong>What this means:</strong>
+                                The cost of television advertising required to influence one voter's decision.
+                                <br><br>
+                                <strong>Range source:</strong>
+                                Based on 2024 swing state spending ($1.6B Democratic) and academic research on advertising effectiveness (0.5-1% persuasion rate). See <a href="appendix-c-cost-per-vote-roi.html" style="color: #a0c4ff;">Appendix C, Section III</a> for detailed calculations.
+                            </span>
+                        </span>
+                    </div>
+                    <div class="source">Range: <a href="appendix-c-cost-per-vote-roi.html">Appendix C</a> (2024 spending analysis)</div>
+                    <div class="slider-container">
+                        <input type="range" id="tv-cost" min="3000" max="15000" step="500" value="9000">
+                        <span class="slider-value" id="tv-cost-value">$7,500</span>
+                    </div>
+                    <div class="range-labels">
+                        <span>Optimistic: $3,000</span>
+                        <span>Realistic: $15,000</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="runSimulation()">Run 10,000 Simulations</button>
+            </div>
+
+            <div class="panel">
+                <h2>Simulation Results</h2>
+
+                <div id="results-container">
+                    <div class="loading">
+                        <p style="margin-bottom: 1rem;">Adjust assumptions using the sliders, then click <strong>"Run 10,000 Simulations"</strong> to see the probability distribution of outcomes.</p>
+                        <p style="font-size: 0.85rem; color: var(--text-medium);">Each simulation randomly samples from the assumption ranges, producing a distribution of possible outcomes rather than a single point estimate.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footnotes-section">
+            <h2>Notes</h2>
+            
+            <p class="footnote-item" id="fn1"><strong>[1]</strong> Monte Carlo simulation is named after the famous casino in Monaco. Just as casino games involve randomness, Monte Carlo methods use random sampling to explore the range of possible outcomes when inputs are uncertain. The technique was developed during the Manhattan Project and is now widely used in finance, engineering, and policy analysis. For an accessible introduction, see: Kroese, D.P. et al., "Why the Monte Carlo method is so important today," <em>WIREs Computational Statistics</em> (2014). <a href="https://onlinelibrary.wiley.com/doi/10.1002/wics.1314" target="_blank">Wiley</a></p>
+
+            <p class="footnote-item" id="fn2"><strong>[2]</strong> <strong>Assumption range sources:</strong> (a) Swing state AI users (7M-18M): derived from Pew Research (34% ChatGPT usage) and Elon University (52% any LLM usage), adjusted for swing state demographics and voter turnout-see <a href="appendix-b-voter-ai-usage.html">Appendix B</a>; (b) AI vs. traditional search rate (10%-70%): based on current Google AI Overview penetration (~15-20% of queries) with projection to 2028 as AI integration deepens; (c) Political query rate (3%-35%): author estimate, no direct research available; (d) Content reach rate (10%-80%): author estimate based on campaign coverage scope assumptions; (e) Influence rate (0.5%-4.76%): upper bound from Rand et al., <em>Nature</em> (Dec 2025), lower bound is conservative discount; (f) Optimization lift factor (1.2×-4.0×): EMI knowledge graph research shows accuracy improves from 16.7% ←' 54.2% ←' 72% with structured data markup, roughly 2-4× improvement; (g) TV cost per voter ($3,000-$15,000): derived from 2024 Democratic swing state spending and academic research on advertising effectiveness-see <a href="appendix-c-cost-per-vote-roi.html">Appendix C</a>. The simulation uses a normal distribution with slider position as mean and range endpoints at approximately ±2 standard deviations.</p>
+
+            <p class="footnote-item" id="fn3"><strong>[3]</strong> Assumptions are treated as independent (uncorrelated). In reality, some assumptions may be correlated-for example, higher AI adoption might correlate with higher political query rates. Future versions of this model could incorporate correlation structures.</p>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p><a href="appendix-c-cost-per-vote-roi.html">← Appendix C: Cost-Per-Vote ROI</a>  -  <a href="paper-5-structured-data.html">Paper V: Structured Data ←'</a></p>
+            <p>© 2025. <a href="index.html">Return to index</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Default values (matching paper assumptions - midpoints)
+        const DEFAULTS = {
+            'ai-users': 11.5,
+            'ai-search-rate': 35,
+            'query-rate': 15,
+            'reach-rate': 50,
+            'influence-rate': 2.5,
+            'lift-factor': 2.0,
+            'tv-cost': 7500
+        };
+
+        // Fixed investment (infrastructure cost)
+        const FIXED_INVESTMENT = 5000000;
+
+        // Update displays
+        function updateDisplays() {
+            document.getElementById('ai-users-value').textContent = 
+                parseFloat(document.getElementById('ai-users').value).toFixed(1) + 'M';
+            document.getElementById('ai-search-rate-value').textContent = 
+                document.getElementById('ai-search-rate').value + '%';
+            document.getElementById('query-rate-value').textContent = 
+                document.getElementById('query-rate').value + '%';
+            document.getElementById('reach-rate-value').textContent = 
+                document.getElementById('reach-rate').value + '%';
+            document.getElementById('influence-rate-value').textContent = 
+                parseFloat(document.getElementById('influence-rate').value).toFixed(2) + '%';
+            document.getElementById('lift-factor-value').textContent = 
+                parseFloat(document.getElementById('lift-factor').value).toFixed(1) + '×';
+            document.getElementById('tv-cost-value').textContent = 
+                '$' + parseInt(document.getElementById('tv-cost').value).toLocaleString();
+        }
+
+        function resetToDefaults() {
+            Object.keys(DEFAULTS).forEach(id => {
+                document.getElementById(id).value = DEFAULTS[id];
+            });
+            updateDisplays();
+        }
+
+        // Add event listeners
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', updateDisplays);
+        });
+
+        // Normal distribution sampling (Box-Muller)
+        function normalRandom(mean, stdDev) {
+            let u1 = Math.random();
+            let u2 = Math.random();
+            let z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+            return mean + z * stdDev;
+        }
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function runSimulation() {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Running 10,000 simulations...</p></div>';
+
+            setTimeout(() => {
+                // Get current slider values as means
+                const aiUsersMean = parseFloat(document.getElementById('ai-users').value) * 1000000;
+                const aiSearchRateMean = parseFloat(document.getElementById('ai-search-rate').value) / 100;
+                const queryRateMean = parseFloat(document.getElementById('query-rate').value) / 100;
+                const reachRateMean = parseFloat(document.getElementById('reach-rate').value) / 100;
+                const influenceRateMean = parseFloat(document.getElementById('influence-rate').value) / 100;
+                const liftFactorMean = parseFloat(document.getElementById('lift-factor').value);
+                const investment = FIXED_INVESTMENT;
+                const tvCost = parseFloat(document.getElementById('tv-cost').value);
+
+                // Define ranges for std dev calculation (±2Ïƒ covers ~95%)
+                const aiUsersStd = (18 - 7) * 1000000 / 4;
+                const aiSearchRateStd = (0.70 - 0.10) / 4;
+                const queryRateStd = (0.35 - 0.03) / 4;
+                const reachRateStd = (0.80 - 0.10) / 4;
+                const influenceRateStd = (0.05 - 0.005) / 4;
+                const liftFactorStd = (4.0 - 1.2) / 4;
+
+                // Run simulations
+                const N = 10000;
+                const optimizedResults = [];
+                const baselineResults = [];
+                const incrementalResults = [];
+
+                for (let i = 0; i < N; i++) {
+                    const aiUsers = clamp(normalRandom(aiUsersMean, aiUsersStd), 5000000, 25000000);
+                    const aiSearchRate = clamp(normalRandom(aiSearchRateMean, aiSearchRateStd), 0.05, 0.85);
+                    const queryRate = clamp(normalRandom(queryRateMean, queryRateStd), 0.01, 0.50);
+                    const reachRate = clamp(normalRandom(reachRateMean, reachRateStd), 0.05, 0.95);
+                    const influenceRate = clamp(normalRandom(influenceRateMean, influenceRateStd), 0.002, 0.08);
+                    const liftFactor = clamp(normalRandom(liftFactorMean, liftFactorStd), 1.1, 5.0);
+
+                    // Optimized: with structured data and AI optimization
+                    const optimized = aiUsers * aiSearchRate * queryRate * reachRate * influenceRate;
+                    
+                    // Baseline: without optimization (divide by lift factor)
+                    const baseline = optimized / liftFactor;
+                    
+                    // Incremental: what the $5M investment buys
+                    const incremental = optimized - baseline;
+
+                    optimizedResults.push(optimized);
+                    baselineResults.push(baseline);
+                    incrementalResults.push(incremental);
+                }
+
+                // Sort for percentiles
+                optimizedResults.sort((a, b) => a - b);
+                baselineResults.sort((a, b) => a - b);
+                incrementalResults.sort((a, b) => a - b);
+
+                // Calculate statistics - Optimized
+                const optMedian = optimizedResults[Math.floor(N / 2)];
+                const optP10 = optimizedResults[Math.floor(N * 0.1)];
+                const optP25 = optimizedResults[Math.floor(N * 0.25)];
+                const optP75 = optimizedResults[Math.floor(N * 0.75)];
+                const optP90 = optimizedResults[Math.floor(N * 0.9)];
+
+                // Calculate statistics - Baseline
+                const baseMedian = baselineResults[Math.floor(N / 2)];
+                const baseP10 = baselineResults[Math.floor(N * 0.1)];
+                const baseP90 = baselineResults[Math.floor(N * 0.9)];
+
+                // Calculate statistics - Incremental
+                const incMedian = incrementalResults[Math.floor(N / 2)];
+                const incP10 = incrementalResults[Math.floor(N * 0.1)];
+                const incP25 = incrementalResults[Math.floor(N * 0.25)];
+                const incP75 = incrementalResults[Math.floor(N * 0.75)];
+                const incP90 = incrementalResults[Math.floor(N * 0.9)];
+
+                // Cost calculations - based on INCREMENTAL voters (what $5M buys)
+                const aiCostPerIncrementalVoter = investment / incMedian;
+                const tvCostForIncremental = incMedian * tvCost;
+                const breakEvenVoters = investment / tvCost;
+                const aboveBreakEven = incrementalResults.filter(r => r >= breakEvenVoters).length / N * 100;
+
+                // Create histogram for incremental results
+                const numBins = 50;
+                const minVal = incrementalResults[0];
+                const maxVal = incrementalResults[N - 1];
+                const binWidth = (maxVal - minVal) / numBins;
+                const bins = new Array(numBins).fill(0);
+
+                incrementalResults.forEach(r => {
+                    const binIndex = Math.min(Math.floor((r - minVal) / binWidth), numBins - 1);
+                    bins[binIndex]++;
+                });
+
+                const maxBin = Math.max(...bins);
+                const breakEvenBinIndex = Math.floor((breakEvenVoters - minVal) / binWidth);
+
+                // Build histogram HTML
+                let histogramBars = '';
+                bins.forEach((count, i) => {
+                    const height = (count / maxBin) * 100;
+                    const isAbove = i >= breakEvenBinIndex;
+                    histogramBars += `<div class="histogram-bar ${isAbove ? 'above-breakeven' : ''}" style="height: ${height}%"></div>`;
+                });
+
+                // Threshold line position
+                const breakEvenPosition = Math.min(95, Math.max(5, ((breakEvenVoters - minVal) / (maxVal - minVal)) * 100));
+
+                // Render results
+                container.innerHTML = `
+                    <h3 style="font-size: 1rem; color: var(--primary-blue); margin-bottom: 0.75rem;">What Does the $5M Investment Buy?</h3>
+                    
+                    <p style="font-size: 0.9rem; color: var(--text-medium); margin-bottom: 1rem;">Chatbots already read campaign websites without optimization. The question is: <strong>what's the incremental benefit</strong> of investing in structured data and AI optimization?</p>
+
+                    <div class="results-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">${Math.round(baseMedian).toLocaleString()}</div>
+                            <div class="metric-label">Baseline (no optimization)</div>
+                        </div>
+                        <div class="metric-card success">
+                            <div class="metric-value">${Math.round(optMedian).toLocaleString()}</div>
+                            <div class="metric-label">With AI optimization</div>
+                        </div>
+                        <div class="metric-card" style="background: linear-gradient(135deg, var(--success-light), #d4edda);">
+                            <div class="metric-value" style="color: var(--success-green);">+${Math.round(incMedian).toLocaleString()}</div>
+                            <div class="metric-label"><strong>Incremental voters</strong> (what $5M buys)</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 0.95rem; color: var(--primary-blue); margin: 1.5rem 0 0.5rem;">The ROI Question: Is $5M Worth It?</h3>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>AI Optimization</th>
+                                <th>Television Advertising</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cost structure</td>
+                                <td>Fixed: $${(investment/1000000).toFixed(0)}M</td>
+                                <td>Variable: $${tvCost.toLocaleString()}/voter</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Incremental voters influenced</strong> (median)</td>
+                                <td colspan="2" style="text-align: center;"><strong>${Math.round(incMedian).toLocaleString()}</strong></td>
+                            </tr>
+                            <tr class="${aiCostPerIncrementalVoter < tvCost ? 'highlight' : 'danger'}">
+                                <td>Cost per incremental voter</td>
+                                <td><strong>$${Math.round(aiCostPerIncrementalVoter).toLocaleString()}</strong></td>
+                                <td><strong>$${tvCost.toLocaleString()}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>To gain ${Math.round(incMedian).toLocaleString()} incremental voters</td>
+                                <td>$${(investment/1000000).toFixed(0)}M</td>
+                                <td>$${(tvCostForIncremental/1000000).toFixed(1)}M</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>Savings vs. TV (median)</td>
+                                <td colspan="2" style="text-align: center;"><strong>$${((tvCostForIncremental - investment)/1000000).toFixed(1)}M</strong> (${Math.round((tvCostForIncremental - investment) / tvCostForIncremental * 100)}% less)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="histogram-section">
+                        <h3>Distribution of Incremental Voters (n=10,000 simulations)</h3>
+                        <div class="histogram">
+                            ${histogramBars}
+                            <div class="breakeven-line" style="left: ${breakEvenPosition}%">
+                                <div class="breakeven-label">Break-even: ${Math.round(breakEvenVoters).toLocaleString()} voters</div>
+                            </div>
+                        </div>
+                        <div class="histogram-labels">
+                            <span>${Math.round(minVal).toLocaleString()}</span>
+                            <span>Incremental Voters (what $5M buys)</span>
+                            <span>${Math.round(maxVal).toLocaleString()}</span>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-medium); margin-top: 0.5rem;">
+                            <span style="color: var(--success-green);">■ </span> Green bars: AI optimization more cost-effective than TV
+                            <span style="margin-left: 1rem; color: var(--accent-blue);">■ </span> Blue bars: TV more cost-effective
+                        </p>
+                    </div>
+
+                    <div class="interpretation ${aboveBreakEven >= 80 ? '' : 'warning'}">
+                        <h3>${aboveBreakEven >= 80 ? '✓ Strong ROI Case' : '△ Conditional ROI'}</h3>
+                        <p>${aboveBreakEven >= 80 
+                            ? `In <strong>${aboveBreakEven.toFixed(1)}%</strong> of simulations, the $5M AI optimization investment delivers better ROI than equivalent TV spending. At the median, AI optimization produces <strong>${Math.round(incMedian).toLocaleString()} incremental voters</strong> at <strong>$${Math.round(aiCostPerIncrementalVoter).toLocaleString()}</strong> per voter-vs. <strong>$${tvCost.toLocaleString()}</strong> for TV. That's a <strong>${Math.round((tvCost - aiCostPerIncrementalVoter) / tvCost * 100)}% cost advantage</strong>.`
+                            : `In <strong>${aboveBreakEven.toFixed(1)}%</strong> of simulations, AI optimization beats TV on cost-per-incremental-voter. Under more pessimistic assumptions, TV may be more cost-effective-but AI optimization still offers reach to voters that TV cannot access.`
+                        }</p>
+                    </div>
+
+                    <h3 style="font-size: 0.95rem; color: var(--primary-blue); margin: 1.5rem 0 0.5rem;">Scenario Analysis</h3>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Baseline</th>
+                                <th>Optimized</th>
+                                <th>Incremental</th>
+                                <th>Cost/Incremental Voter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10th percentile (pessimistic)</td>
+                                <td>${Math.round(baseP10).toLocaleString()}</td>
+                                <td>${Math.round(optP10).toLocaleString()}</td>
+                                <td><strong>+${Math.round(incP10).toLocaleString()}</strong></td>
+                                <td>$${Math.round(investment / incP10).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td>25th percentile</td>
+                                <td>-</td>
+                                <td>${Math.round(optP25).toLocaleString()}</td>
+                                <td><strong>+${Math.round(incP25).toLocaleString()}</strong></td>
+                                <td>$${Math.round(investment / incP25).toLocaleString()}</td>
+                            </tr>
+                            <tr style="font-weight: 600; background: var(--success-light);">
+                                <td>50th percentile (median)</td>
+                                <td>${Math.round(baseMedian).toLocaleString()}</td>
+                                <td>${Math.round(optMedian).toLocaleString()}</td>
+                                <td><strong>+${Math.round(incMedian).toLocaleString()}</strong></td>
+                                <td>$${Math.round(investment / incMedian).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td>75th percentile</td>
+                                <td>-</td>
+                                <td>${Math.round(optP75).toLocaleString()}</td>
+                                <td><strong>+${Math.round(incP75).toLocaleString()}</strong></td>
+                                <td>$${Math.round(investment / incP75).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td>90th percentile (optimistic)</td>
+                                <td>${Math.round(baseP90).toLocaleString()}</td>
+                                <td>${Math.round(optP90).toLocaleString()}</td>
+                                <td><strong>+${Math.round(incP90).toLocaleString()}</strong></td>
+                                <td>$${Math.round(investment / incP90).toLocaleString()}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="footnote">
+                        <strong>Key insight:</strong> The $5M investment doesn't just influence voters-it influences <em>more</em> voters than would be influenced without optimization. The break-even point is only <strong>${Math.round(breakEvenVoters).toLocaleString()} incremental voters</strong> (at $${tvCost.toLocaleString()}/voter TV cost). Under current assumptions, this threshold is exceeded in <strong>${aboveBreakEven.toFixed(1)}%</strong> of simulations.
+                    </p>
+                `;
+            }, 100);
+        }
+
+        // Initialize
+        updateDisplays();
+    </script>
+</body>
+</html>

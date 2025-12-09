@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix F: The Decisive Demographic | KyanosTech Research</title>
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --accent-blue: #3182ce;
+            --light-blue: #ebf8ff;
+            --text-dark: #1a202c;
+            --text-medium: #4a5568;
+            --border-color: #e2e8f0;
+            --success-green: #38a169;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.8;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+        .site-header {
+            background: var(--primary-blue);
+            padding: 1rem 2rem;
+        }
+
+        .site-header-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-logo {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .site-nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .site-nav a:hover { color: white; }
+
+        .paper-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .paper-series {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .paper-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .paper-subtitle {
+            font-size: 1.1rem;
+            font-style: italic;
+            opacity: 0.95;
+        }
+
+        .paper-meta {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.9rem;
+        }
+
+        .abstract {
+            background: var(--light-blue);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+        }
+
+        .abstract-label {
+            font-weight: 700;
+            font-style: normal;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin: 2.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        ul, ol { margin: 1rem 0 1rem 2rem; }
+        li { margin-bottom: 0.5rem; }
+
+        .callout {
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .callout-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .callout-finding {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-left: 4px solid var(--success-green);
+        }
+
+        .callout-finding .callout-label { color: #276749; }
+
+        .callout-context {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .callout-context .callout-label { color: var(--primary-blue); }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .data-table tr:nth-child(even) { background: #f8fafc; }
+
+        .cross-ref {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-style: italic;
+        }
+
+        .cross-ref a { color: var(--accent-blue); }
+
+        .fn-ref a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.8em;
+            vertical-align: super;
+        }
+
+        .footnotes {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .footnote-item {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            text-indent: -1.5rem;
+        }
+
+        .footnote-item a { color: var(--accent-blue); }
+
+        .site-footer {
+            background: var(--primary-blue);
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .site-footer a { color: rgba(255,255,255,0.8); }
+    
+        /* Dropdown Navigation */
+        .nav-dropdown { position: relative; display: inline-block; }
+        .nav-dropdown-trigger { color: rgba(255,255,255,0.8); cursor: pointer; margin-left: 1.5rem; font-size: 0.9rem; }
+        .nav-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: #1a2a3a; min-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 4px; padding: 0.5rem 0; z-index: 200; padding-top: 0.75rem; }
+        .nav-dropdown::before { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 0.75rem; }
+        .nav-dropdown:hover .nav-dropdown-content { display: block; }
+        .nav-dropdown-content a { display: block; padding: 0.5rem 1rem; white-space: nowrap; font-size: 0.8125rem; color: rgba(255,255,255,0.8); border-left: 3px solid transparent; margin: 0; }
+        .nav-dropdown-content a:hover { background: #2c4a6e; color: white; border-left-color: #4a90d9; }
+
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../index.html" class="site-logo">KyanosTech Research</a>
+                        <nav class="site-nav">
+                <a href="../index.html">Research</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Papers ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="../papers/paper-1-synthesis.html">I. The Case for Progressive AI Infrastructure</a>
+                        <a href="../papers/paper-2-gatekeeper.html">II. AI as the New Information Gatekeeper</a>
+                        <a href="../papers/paper-3-structural-alignment.html">III. Evidence Asymmetry and Structural Alignment</a>
+                        <a href="../papers/paper-4-neutrality.html">IV. The Impossibility of Political Neutrality</a>
+                        <a href="../papers/paper-5-structured-data.html">V. Structured Data as Independent Value</a>
+                        <a href="../papers/paper-6-technical-pathways.html">VI. Technical Pathways to AI Visibility</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Appendices ▾</span>
+                    <div class="nav-dropdown-content">
+                        <a href="appendix-a-market-dynamics.html">A. Market Dynamics</a>
+                        <a href="appendix-b-voter-ai-usage.html">B. Voter AI Usage Projections</a>
+                        <a href="appendix-c-cost-per-vote-roi.html">C. Cost-Per-Vote ROI Analysis</a>
+                        <a href="appendix-d-monte-carlo.html">D. Monte Carlo Simulation</a>
+                        <a href="appendix-e-workflow-demo.html">E. Campaign Workflow Demo</a>
+                        <a href="appendix-f-demographic-convergence.html">F. Demographic Convergence</a>
+                    </div>
+                </div>
+                <a href="../about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="paper-header">
+        <div class="paper-header-inner">
+            <div class="paper-series">Appendix F</div>
+            <h1 class="paper-title">The Decisive Demographic</h1>
+            <p class="paper-subtitle">Young Men, Podcast Influence, and AI Adoption Patterns</p>
+            <div class="paper-meta">
+                <span class="author">Ed Forman</span> with Claude (Anthropic) - December 2025
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="abstract">
+            <div class="abstract-label">Abstract</div>
+            <p>This appendix examines the demographic overlap between AI chatbot adoption and 2024 electoral influence. The data show that young men aged 18-29 constitute both the heaviest users of AI chatbots and the demographic group that shifted most dramatically in the 2024 election. Eighty-five percent of ChatGPT users are male. Seventy-one percent of men aged 18-24 use generative AI. This same cohort shifted approximately 15 percentage points toward Trump between 2020 and 2024, influenced substantially by podcast appearances. The demographic overlap suggests that the voters most susceptible to emerging media influence are also the voters most likely to receive political information through AI systems in future election cycles.</p>
+        </div>
+
+        <div class="cross-ref">
+            <strong>Related:</strong> This appendix provides demographic evidence supporting arguments in <a href="../papers/paper-1-synthesis.html">Paper I</a> (the synthesis case) and <a href="../papers/paper-2-gatekeeper.html">Paper II</a> (AI as information gatekeeper). For electoral impact modeling, see <a href="appendix-d-monte-carlo.html">Appendix D</a>.
+        </div>
+
+        <h2>Historical Pattern</h2>
+
+        <p>Each major shift in political media has followed a similar trajectory: early adopters build infrastructure while opponents debate engagement, creating advantages that prove difficult to overcome later.</p>
+
+        <p>Conservative talk radio emerged after the Fairness Doctrine's 1987 repeal. By 2008, conservative hosts outnumbered liberal hosts approximately ten to one.<sup class="fn-ref"><a href="#fn1" id="fn1-ref">1</a></sup> Air America, the most significant progressive talk radio effort, launched in 2004 and declared bankruptcy in 2010.<sup class="fn-ref"><a href="#fn2" id="fn2-ref">2</a></sup></p>
+
+        <p>Social media showed a different pattern. Obama's 2008 campaign pioneered political social media, but by 2016 conservative media had developed superior content distribution networks, particularly on Facebook.<sup class="fn-ref"><a href="#fn3" id="fn3-ref">3</a></sup></p>
+
+        <p>Podcasts followed the talk radio pattern. The medium grew for roughly a decade before becoming electorally decisive in 2024. The Trump campaign made 13 or more podcast appearances targeting young male audiences; Harris's engagement was more limited.<sup class="fn-ref"><a href="#fn4" id="fn4-ref">4</a></sup></p>
+
+        <p>AI chatbots are developing faster than any previous medium. ChatGPT reached 100 million users in two months, a milestone that took TikTok nine months, Instagram two and a half years, and Facebook four and a half years.<sup class="fn-ref"><a href="#fn5" id="fn5-ref">5</a></sup> The window for infrastructure building is correspondingly compressed.</p>
+
+        <h2>AI Chatbot Demographics</h2>
+
+        <h3>Gender Distribution</h3>
+
+        <p>Men dominate AI chatbot adoption. According to 2024 analytics from Appfigures, 85 percent of ChatGPT users are male.<sup class="fn-ref"><a href="#fn6" id="fn6-ref">6</a></sup> This gap extends across platforms: only 18 percent of AI assistant app users and 14 percent of AI image generator users are female.<sup class="fn-ref"><a href="#fn7" id="fn7-ref">7</a></sup></p>
+
+        <p>A study published in the <em>Proceedings of the National Academy of Sciences</em> found that women were 16 percentage points behind men in ChatGPT adoption across all occupations, even when comparing workers with identical job responsibilities.<sup class="fn-ref"><a href="#fn8" id="fn8-ref">8</a></sup></p>
+
+        <h3>Age Distribution</h3>
+
+        <p>Young adults show the highest adoption rates:</p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Age Group</th>
+                    <th>AI Usage</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>18-24</td>
+                    <td>58% have used ChatGPT</td>
+                    <td>Pew Research<sup class="fn-ref"><a href="#fn9" id="fn9-ref">9</a></sup></td>
+                </tr>
+                <tr>
+                    <td>18-29</td>
+                    <td>40% use chatbots daily</td>
+                    <td>Tidio<sup class="fn-ref"><a href="#fn10" id="fn10-ref">10</a></sup></td>
+                </tr>
+                <tr>
+                    <td>25-34</td>
+                    <td>50% have used ChatGPT</td>
+                    <td>Industry surveys<sup class="fn-ref"><a href="#fn11" id="fn11-ref">11</a></sup></td>
+                </tr>
+                <tr>
+                    <td>55+</td>
+                    <td>4% interact with chatbots</td>
+                    <td>Pew Research<sup class="fn-ref"><a href="#fn12" id="fn12-ref">12</a></sup></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>The Intersection</h3>
+
+        <p>When gender and age combine, the concentration becomes stark: 71 percent of men aged 18-24 use generative AI, the highest rate of any demographic group.<sup class="fn-ref"><a href="#fn13" id="fn13-ref">13</a></sup></p>
+
+        <h2>The 2024 Podcast Effect</h2>
+
+        <h3>Rogan and the Young Male Audience</h3>
+
+        <p><em>The Joe Rogan Experience</em> emerged as the most politically consequential podcast in 2024:</p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Spotify followers</td>
+                    <td>15.7 million<sup class="fn-ref"><a href="#fn14" id="fn14-ref">14</a></sup></td>
+                </tr>
+                <tr>
+                    <td>YouTube subscribers</td>
+                    <td>17.5 million</td>
+                </tr>
+                <tr>
+                    <td>Male audience share</td>
+                    <td>80%<sup class="fn-ref"><a href="#fn15" id="fn15-ref">15</a></sup></td>
+                </tr>
+                <tr>
+                    <td>Audience aged 18-34</td>
+                    <td>56%<sup class="fn-ref"><a href="#fn16" id="fn16-ref">16</a></sup></td>
+                </tr>
+                <tr>
+                    <td>Trump interview views (YouTube)</td>
+                    <td>50+ million<sup class="fn-ref"><a href="#fn17" id="fn17-ref">17</a></sup></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Trump's podcast appearances extended beyond Rogan to include Theo Von (14 million YouTube views), Logan Paul, and the Nelk Boys, who led a $20 million voter mobilization effort targeting college fraternities.<sup class="fn-ref"><a href="#fn18" id="fn18-ref">18</a></sup> Combined YouTube views across these appearances exceeded 68 million.<sup class="fn-ref"><a href="#fn19" id="fn19-ref">19</a></sup></p>
+
+        <h3>Electoral Results</h3>
+
+        <p>Exit polls documented substantial movement among young male voters:</p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>2024 Result</th>
+                    <th>Change from 2020</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Men 18-29 nationally</td>
+                    <td>Trump +14-16</td>
+                    <td>Shifted ~15 points<sup class="fn-ref"><a href="#fn20" id="fn20-ref">20</a></sup></td>
+                </tr>
+                <tr>
+                    <td>Men under 30 in Pennsylvania</td>
+                    <td>Trump +18</td>
+                    <td>Biden won by 9 in 2020<sup class="fn-ref"><a href="#fn21" id="fn21-ref">21</a></sup></td>
+                </tr>
+                <tr>
+                    <td>Men 25-29 nationally</td>
+                    <td>Trump +2</td>
+                    <td>Biden won by 29 in 2020<sup class="fn-ref"><a href="#fn22" id="fn22-ref">22</a></sup></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>At Trump's election night event, Dana White thanked "the Nelk Boys, Adin Ross, Theo Von, Bussin' With The Boys, and last but not least, the mighty and powerful Joe Rogan."<sup class="fn-ref"><a href="#fn23" id="fn23-ref">23</a></sup></p>
+
+        <h2>The Overlap</h2>
+
+        <div class="callout callout-finding">
+            <div class="callout-label">Key Finding</div>
+            <p><span class="highlight">The demographic overlap between heavy AI users and podcast-influenced 2024 voters is substantial.</span> Men 18-29 use generative AI at the highest rates (71 percent of men 18-24) and shifted approximately 15 points toward Trump via podcast influence. The 80 percent male podcast audience mirrors the 85 percent male ChatGPT user base. The 56 percent of Rogan listeners aged 18-34 aligns with the 58 percent ChatGPT adoption rate among 18-24 year olds.</p>
+        </div>
+
+        <p><span class="highlight">The pattern suggests a sequence: podcasts influenced young men in 2024; AI chatbots will increasingly influence this same demographic in 2026 and 2028.</span> Unlike podcasts, which require episodic engagement, AI chatbots offer continuous, personalized interaction.</p>
+
+        <h2>Scale Comparison</h2>
+
+        <p>The adoption curves differ substantially:</p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Medium</th>
+                    <th>Years to Political Significance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Talk radio</td>
+                    <td>~15 years (1987-2002)</td>
+                </tr>
+                <tr>
+                    <td>Social media</td>
+                    <td>~8 years (2008-2016)</td>
+                </tr>
+                <tr>
+                    <td>Podcasts</td>
+                    <td>~10 years (2014-2024)</td>
+                </tr>
+                <tr>
+                    <td>AI chatbots</td>
+                    <td>~3 years (2022-2025)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Conclusion</h2>
+
+        <p>The data show near-complete demographic overlap between AI chatbot heavy users and the voters who proved most responsive to podcast influence in 2024. <span class="highlight">Young men aged 18-29 constitute the decisive swing demographic, and this same group is adopting AI at the fastest rates.</span></p>
+
+        <p>The 2024 election was decided by 229,766 votes across Wisconsin, Michigan, and Pennsylvania.<sup class="fn-ref"><a href="#fn24" id="fn24-ref">24</a></sup> In an environment where AI chatbots can shift voter preferences by 3.9 to 10 percentage points and flip 1 in 21 voters in a single conversation,<sup class="fn-ref"><a href="#fn25" id="fn25-ref">25</a></sup> the question of which information these voters receive through AI systems becomes electorally significant.</p>
+
+        <div class="footnotes">
+            <h2>Notes</h2>
+
+            <p class="footnote-item" id="fn1"><strong>[1]</strong> Talkers Magazine Heavy Hundred rankings and industry analysis, 2008. <a href="#fn1-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn2"><strong>[2]</strong> Air America Radio filed for Chapter 7 bankruptcy in January 2010 after launching in March 2004. <a href="#fn2-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn3"><strong>[3]</strong> CrowdTangle and NewsWhip analyses of Facebook engagement by political orientation, 2016-2020. <a href="#fn3-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn4"><strong>[4]</strong> Tracking of Trump and Harris podcast appearances, October-November 2024, multiple sources. <a href="#fn4-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn5"><strong>[5]</strong> Technology adoption comparisons widely reported. ChatGPT reached 100 million users by January 2023. <a href="#fn5-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn6"><strong>[6]</strong> Appfigures, "ChatGPT User Demographics Analysis," 2024. <a href="#fn6-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn7"><strong>[7]</strong> Appfigures analysis of AI app user demographics across platforms, 2024. <a href="#fn7-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn8"><strong>[8]</strong> Anders Humlum and Emilie Vestergaard, "The Adoption of ChatGPT," <em>Proceedings of the National Academy of Sciences</em>, 2024. <a href="https://www.pnas.org/doi/10.1073/pnas.2407737121" target="_blank">pnas.org</a> <a href="#fn8-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn9"><strong>[9]</strong> Pew Research Center, "Public Awareness of Artificial Intelligence," 2024. <a href="https://www.pewresearch.org/internet/2024/03/26/public-awareness-of-artificial-intelligence/" target="_blank">pewresearch.org</a> <a href="#fn9-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn10"><strong>[10]</strong> Tidio, "AI Chatbot Usage Statistics," 2024. <a href="#fn10-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn11"><strong>[11]</strong> Consolidated industry surveys on ChatGPT usage by age group, 2024. <a href="#fn11-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn12"><strong>[12]</strong> Pew Research Center generational analysis of AI technology adoption, 2024. <a href="#fn12-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn13"><strong>[13]</strong> Consolidated analysis of gender and age intersection in AI adoption, drawing on Appfigures, Pew Research, and PNAS studies, 2024. <a href="#fn13-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn14"><strong>[14]</strong> Spotify and YouTube platform data for Joe Rogan Experience, October 2024. <a href="#fn14-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn15"><strong>[15]</strong> Edison Research, "The Podcast Consumer Report," 2024. <a href="#fn15-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn16"><strong>[16]</strong> Edison Research age distribution data for Joe Rogan Experience listeners, 2024. <a href="#fn16-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn17"><strong>[17]</strong> YouTube view counts for Trump-Rogan interview, tracked through November 2024. <a href="#fn17-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn18"><strong>[18]</strong> Reporting on Nelk Boys voter mobilization effort, October 2024. <a href="#fn18-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn19"><strong>[19]</strong> Aggregated YouTube view counts for Trump podcast appearances, compiled November 2024. <a href="#fn19-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn20"><strong>[20]</strong> PBS NewsHour, "How young voters shaped the 2024 election," November 2024. <a href="https://www.pbs.org/newshour/politics/how-young-voters-shaped-the-2024-election" target="_blank">pbs.org</a> <a href="#fn20-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn21"><strong>[21]</strong> Pennsylvania exit poll data for men under 30, 2020 vs. 2024 comparison. <a href="#fn21-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn22"><strong>[22]</strong> Cohort analysis tracking voters from 2020 to 2024, exit poll data. <a href="#fn22-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn23"><strong>[23]</strong> Dana White remarks at Trump election night event, November 5, 2024. Video widely circulated. <a href="#fn23-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn24"><strong>[24]</strong> Council on Foreign Relations, "The 2024 Election by the Numbers," December 2024. <a href="#fn24-ref">↩</a></p>
+
+            <p class="footnote-item" id="fn25"><strong>[25]</strong> David G. Rand et al., "Persuading Voters Using Human-Artificial Intelligence Dialogues," <em>Nature</em>, December 4, 2025; Fisher et al., ACL 2025. <a href="#fn25-ref">↩</a></p>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p><a href="appendix-e-workflow-demo.html"><- Appendix E</a> - <a href="../index.html">Research Home</a></p>
+            <p>© 2025 KyanosTech. Research produced with Claude (Anthropic).</p>
+        </div>
+    </footer>
+</body>
+</html>
